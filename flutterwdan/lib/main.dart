@@ -1,4 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+GlobalKey<_MyHomePageState> globalKey = GlobalKey();
+double _size = 1.0;
+bool _large = false;
+int _counter = 0;
+
+final MoneText monetextinstance = new MoneText();
 
 void main() {
   runApp(const MyApp());
@@ -41,9 +49,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin{
+  late AnimationController _animationController;
+  bool isLarge = false;
   void _incrementCounter() {
     setState(() {
 
@@ -52,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+  }
+
   Widget build(BuildContext context) {
   
     return new Scaffold(
@@ -65,18 +77,50 @@ class _MyHomePageState extends State<MyHomePage> {
             new Text(
               'Mone:',
             ),
-            new Text(
-              '\$$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            monetextinstance,
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+            _large = !_large;
+           _incrementCounter();
+           },
         tooltip: 'Increment',
         child: const Icon(Icons.paid),
       ), 
     );
   }
+}
+
+class MoneText extends StatefulWidget{
+  
+  const MoneText({super.key});
+  
+  
+  @override
+  State<MoneText> createState() => _MoneTextState();
+
+}
+
+class _MoneTextState extends State<MoneText> {
+  
+
+  void _getBig() {
+    setState(() {
+      _size = _large ? 2.0 : 1.0;
+      _large = !_large;
+    });
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(curve: Curves.easeIn,
+      duration: const Duration(seconds: 1),
+      child: Text("\$$_counter", textScaleFactor: _size,),
+      );
+  }
+
+  
+  
 }
